@@ -175,15 +175,13 @@
     <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Data\ApplicationDbContext.cs" />
+    <Compile Include="Domain\ApplicationUser.cs" />
     <Compile Include="Domain\Issue.cs" />
     <Compile Include="Domain\LogAction.cs" />
-    <Compile Include="Filters\LogAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\ControllerConvention.cs" />
-    <Compile Include="Infrastructure\CurrentUser.cs" />
-    <Compile Include="Infrastructure\ICurrentUser.cs" />
     <Compile Include="Infrastructure\StructureMapDependencyResolver.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -254,6 +252,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Filters\" />
+    <Folder Include="Infrastructure\Tasks\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

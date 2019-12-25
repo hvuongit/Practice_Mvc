@@ -4,6 +4,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using Practice_Mvc.Infrastructure;
 using StructureMap;
+using StructureMap.TypeRules;
 
 namespace Practice_Mvc
 {
@@ -32,6 +33,16 @@ namespace Practice_Mvc
                     scan.WithDefaultConventions();
                     scan.With(new ControllerConvention());
                 });
+                cfg.For<IFilterProvider>().Use(
+                    new StructureMapFilterProvider(() => Container ?? ObjectFactory.Container));
+                
+                cfg.SetAllProperties(x =>
+                    x.Matching(p =>
+                        p.DeclaringType.CanBeCastTo(typeof(ActionFilterAttribute)) &&
+                            p.DeclaringType.Namespace.StartsWith("Practice_Mvc") &&
+                            !p.PropertyType.IsPrimitive &&
+                            p.PropertyType != typeof(string)
+                    ));
             });
         }
 

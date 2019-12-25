@@ -175,7 +175,6 @@
     <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Data\ApplicationDbContext.cs" />
-    <Compile Include="Domain\ApplicationUser.cs" />
     <Compile Include="Domain\Issue.cs" />
     <Compile Include="Domain\LogAction.cs" />
     <Compile Include="Global.asax.cs">

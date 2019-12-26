@@ -1,8 +1,10 @@
-﻿using System.Web;
+﻿using System;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Practice_Mvc.Infrastructure;
+using Practice_Mvc.Infrastructure.Tasks;
 using StructureMap;
 using StructureMap.TypeRules;
 
@@ -32,18 +34,57 @@ namespace Practice_Mvc
                 cfg.AddRegistry(new ActionFilterRegistry(
                     ()=> Container ?? ObjectFactory.Container));
                 cfg.AddRegistry(new MvcRegistry());
+                cfg.AddRegistry(new TaskRegistry());
+
+                using (var container = ObjectFactory.Container.GetNestedContainer())
+                {
+                    foreach (var task in container.GetAllInstances<IRunAtInit>())
+                    {
+                        task.Execute();
+                    }
+
+                    foreach (var task in container.GetAllInstances<IRunAtStartup>())
+                    {
+                        task.Execute();
+                    }
+                }
+
             });
         }
 
         public void Application_BeginRequest()
         {
             Container = ObjectFactory.Container.GetNestedContainer();
+
+            foreach (var task in Container.GetAllInstances<IRunOnEachRequest>())
+            {
+                task.Execute();
+            }
+        }
+
+        public void Application_Error()
+        {
+            foreach (var task in Container.GetAllInstances<IRunOnError>())
+            {
+                task.Execute();
+            }
         }
 
         public void Application_EndRequest()
         {
-            Container.Dispose();
-            Container = null;
+            try
+            {
+                foreach (var task in Container.GetAllInstances<IRunAfterEachRequest>())
+                {
+                    task.Execute();   
+                }
+            }
+            finally
+            {
+                Container.Dispose();
+                Container = null;
+            } 
+           
         }
     }
 }

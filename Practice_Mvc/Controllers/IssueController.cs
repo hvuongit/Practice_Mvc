@@ -44,6 +44,7 @@ namespace Practice_Mvc.Controllers
             _context.Issues.Add(new Issue(_currentUser.User, form.Subject, form.Body));
 
             _context.SaveChanges();
+
             return RedirectToAction("Index", "Home");
         }
 

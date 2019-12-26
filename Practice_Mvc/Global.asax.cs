@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -31,31 +32,28 @@ namespace Practice_Mvc
             {
                 cfg.AddRegistry(new StandardRegistry());
                 cfg.AddRegistry(new ControllerRegistry());
-                cfg.AddRegistry(new ActionFilterRegistry(
-                    ()=> Container ?? ObjectFactory.Container));
+                cfg.AddRegistry(new ActionFilterRegistry(()=> Container ?? ObjectFactory.Container));
                 cfg.AddRegistry(new MvcRegistry());
                 cfg.AddRegistry(new TaskRegistry());
+            });
 
-                using (var container = ObjectFactory.Container.GetNestedContainer())
+            using (var container = ObjectFactory.Container.GetNestedContainer())
+            {
+                foreach (var task in container.GetAllInstances<IRunAtInit>())
                 {
-                    foreach (var task in container.GetAllInstances<IRunAtInit>())
-                    {
-                        task.Execute();
-                    }
-
-                    foreach (var task in container.GetAllInstances<IRunAtStartup>())
-                    {
-                        task.Execute();
-                    }
+                    task.Execute();
                 }
 
-            });
+                foreach (var task in container.GetAllInstances<IRunAtStartup>())
+                {
+                    task.Execute();
+                }
+            }
         }
 
         public void Application_BeginRequest()
         {
             Container = ObjectFactory.Container.GetNestedContainer();
-
             foreach (var task in Container.GetAllInstances<IRunOnEachRequest>())
             {
                 task.Execute();
@@ -76,7 +74,7 @@ namespace Practice_Mvc
             {
                 foreach (var task in Container.GetAllInstances<IRunAfterEachRequest>())
                 {
-                    task.Execute();   
+                    task.Execute();
                 }
             }
             finally

@@ -200,6 +200,7 @@
     <Compile Include="Infrastructure\Tasks\IRunOnEachRequest.cs" />
     <Compile Include="Infrastructure\Tasks\IRunOnError.cs" />
     <Compile Include="Infrastructure\Tasks\TaskRegistry.cs" />
+    <Compile Include="Infrastructure\TransactionPerRequest.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Issue\IssueDetailsViewModel.cs" />

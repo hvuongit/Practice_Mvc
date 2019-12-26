@@ -9,6 +9,7 @@ using System.Linq;
 using System.Web.Mvc;
 using AutoMapper.QueryableExtensions;
 using Practice_Mvc.Infrastructure;
+using Practice_Mvc.Infrastructure.Alerts;
 
 namespace Practice_Mvc.Controllers
 {
@@ -92,7 +93,8 @@ namespace Practice_Mvc.Controllers
 			_context.SaveChanges();
 
 			//return RedirectToAction("Index", "Home");
-            return this.RedirectToAction<HomeController>(c => c.Index());
+            return this.RedirectToAction<HomeController>(c => c.Index())
+                .WithSuccess("Issue created!");
         }
 
 		[Log("Viewed issue {id}")]
@@ -103,9 +105,10 @@ namespace Practice_Mvc.Controllers
 				.SingleOrDefault(i => i.IssueID == id);
 
 			if (model == null)
-			{
-				throw new ApplicationException("Issue not found!");
-			}
+            {
+                return this.RedirectToAction<HomeController>(c => c.Index())
+                    .WithError("Unable to find this issue. Maybe it was deleted");
+            }
 
 			return View(model);
 		}
@@ -119,7 +122,8 @@ namespace Practice_Mvc.Controllers
 
 			if (model == null)
 			{
-				throw new ApplicationException("Issue not found!");
+                return this.RedirectToAction<HomeController>(c => c.Index())
+                    .WithError("Unable to find this issue. Maybe it was deleted");
 			}
 
             model.AvailableUsers = GetAvailableUsers();
@@ -142,7 +146,8 @@ namespace Practice_Mvc.Controllers
 
 			if (issue == null)
 			{
-				throw new ApplicationException("Issue not found!");
+                return this.RedirectToAction<HomeController>(c => c.Index())
+                    .WithError("Unable to find this issue. Maybe it was deleted");
 			}
 
 			var assignedToUser = _context.Users.Single(u => u.Id == form.AssignedToId);
@@ -154,7 +159,8 @@ namespace Practice_Mvc.Controllers
 
 
 			//return RedirectToAction("View", new { id = form.IssueID });
-            return this.RedirectToAction(c => c.View(form.IssueID));
+            return this.RedirectToAction(c => c.View(form.IssueID))
+                .WithSuccess("Changes saved!");
         }
 
 		[HttpPost, ValidateAntiForgeryToken, Log("Deleted issue {id}")]
@@ -164,7 +170,8 @@ namespace Practice_Mvc.Controllers
 
 			if (issue == null)
 			{
-				throw new ApplicationException("Issue not found!");
+                return this.RedirectToAction<HomeController>(c => c.Index())
+                    .WithError("Unable to find this issue. Maybe it was deleted");
 			}
 
 			_context.Issues.Remove(issue);
@@ -172,7 +179,8 @@ namespace Practice_Mvc.Controllers
 			_context.SaveChanges();
 
 			//return RedirectToAction("Index", "Home");
-            return this.RedirectToAction<HomeController>(c => c.Index());
+            return this.RedirectToAction<HomeController>(c => c.Index())
+                .WithSuccess("Issue deleted!");
         }
 	}
 }

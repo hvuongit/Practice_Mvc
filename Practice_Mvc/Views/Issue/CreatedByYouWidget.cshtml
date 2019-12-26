@@ -5,7 +5,7 @@
     <thead>
     <tr>
         <th>Subject</th>
-        <th>Type</th>
+        <th>IssueType</th>
         <th>Created At</th>
         <th>Assigned To</th>
     </tr>
@@ -15,9 +15,9 @@
     {
         <tr>
             <td>@Html.ActionLink(@issue.Subject, "View", "Issue", routeValues: new { id = @issue.IssueID }, htmlAttributes: null)</td>
-            <td>@issue.Type</td>
+            <td>@issue.IssueType</td>
             <td>@issue.CreatedAt.ToShortDateString()</td>
-            <td>@issue.AssignedTo</td>
+            <td>@issue.AssignedToUserName</td>
         </tr>
 
     }

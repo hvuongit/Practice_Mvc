@@ -120,6 +120,9 @@ namespace Practice_Mvc.Controllers
 				throw new ApplicationException("Issue not found!");
 			}
 
+            model.AvailableUsers = GetAvailableUsers();
+            model.AvailableIssueTypes = GetAvailableIssueTypes();
+
 			return View(model);
 		}
 
@@ -140,7 +143,7 @@ namespace Practice_Mvc.Controllers
 				throw new ApplicationException("Issue not found!");
 			}
 
-			var assignedToUser = _context.Users.Single(u => u.Id == form.AssignedToUserID);
+			var assignedToUser = _context.Users.Single(u => u.Id == form.AssignedToId);
 
 			issue.Subject = form.Subject;
 			issue.AssignedTo = assignedToUser;

@@ -8,15 +8,15 @@ namespace Practice_Mvc.Models.Issue
     {
         public int IssueID { get; set; }
         public string Subject { get; set; }
-        public string Creator { get; set; }
+        public string CreatorUserName { get; set; }
         public string Body { get; set; }
 
-        [Display(Name = "Issue Type")]
+        [Display(Name = "Issue IssueType")]
         public IssueType IssueType { get; set; }
         public SelectListItem[] AvailableIssueTypes { get; set; }
 
         [Display(Name = "Assigned To")]
-        public string AssignedToUserID { get; set; }
+        public string AssignedToId { get; set; }
         public SelectListItem[] AvailableUsers { get; set; }
     }
 }

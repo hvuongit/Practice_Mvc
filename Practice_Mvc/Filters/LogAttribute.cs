@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Practice_Mvc.Data;
 using Practice_Mvc.Domain;
+using Practice_Mvc.Infrastructure;
 
 namespace Practice_Mvc.Filters
 {
@@ -13,6 +14,7 @@ namespace Practice_Mvc.Filters
     {
         private IDictionary<string, object> _parameters;
         public ApplicationDbContext Context { get; set; }
+        public ICurrentUser CurrentUser { get; set; }
         public string Description { get; set; }
 
         public LogAttribute(string description)
@@ -28,10 +30,6 @@ namespace Practice_Mvc.Filters
 
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
-            var userId = filterContext.HttpContext.User.Identity.GetUserId();
-
-            var user = Context.Users.Find(userId);
-
             var description = Description;
 
             foreach (var kvp in _parameters)
@@ -39,7 +37,7 @@ namespace Practice_Mvc.Filters
                  description = description.Replace("{" + kvp.Key + "}", kvp.Value.ToString());
             }
 
-            Context.Logs.Add(new LogAction(user, filterContext.ActionDescriptor.ActionName , 
+            Context.Logs.Add(new LogAction(CurrentUser.User, filterContext.ActionDescriptor.ActionName , 
                 filterContext.ActionDescriptor.ControllerDescriptor.ControllerName, description));
             Context.SaveChanges();
         }

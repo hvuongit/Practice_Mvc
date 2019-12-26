@@ -31,6 +31,7 @@ namespace Practice_Mvc
                 cfg.AddRegistry(new ControllerRegistry());
                 cfg.AddRegistry(new ActionFilterRegistry(
                     ()=> Container ?? ObjectFactory.Container));
+                cfg.AddRegistry(new MvcRegistry());
             });
         }
 

@@ -32,13 +32,15 @@ namespace Practice_Mvc.Filters
 
             var user = Context.Users.Find(userId);
 
+            var description = Description;
+
             foreach (var kvp in _parameters)
             {
-                Description = Description.Replace("{" + kvp.Key + "}", kvp.ToString());
+                 description = description.Replace("{" + kvp.Key + "}", kvp.Value.ToString());
             }
 
             Context.Logs.Add(new LogAction(user, filterContext.ActionDescriptor.ActionName , 
-                filterContext.ActionDescriptor.ControllerDescriptor.ControllerName, Description));
+                filterContext.ActionDescriptor.ControllerDescriptor.ControllerName, description));
             Context.SaveChanges();
         }
     }

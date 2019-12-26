@@ -2,5 +2,8 @@
     ViewBag.Title = "Home Page";
 }
 
-<h2>Welcome</h2>
-<p>@Html.Action("IssueWidget", "Issue")</p>
+@Html.Action("YourIssuesWidget", "Issue")
+
+@Html.Action("CreatedByYouWidget", "Issue")
+
+@Html.Action("AssignmentStatsWidget", "Issue")

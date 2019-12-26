@@ -1,9 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using AutoMapper;
-using Practice_Mvc.Domain;
+using Practice_Mvc.Infrastructure.Mapping;
 using Practice_Mvc.Infrastructure.Tasks;
-using Practice_Mvc.Models;
-using Practice_Mvc.Models.Issue;
 
 namespace Practice_Mvc
 {
@@ -11,22 +12,44 @@ namespace Practice_Mvc
     {
         public void Execute()
         {
-            Mapper.CreateMap<Domain.Issue, IssueSummaryViewModel>();
-
-            Mapper.CreateMap<Domain.Issue, IssueDetailsViewModel>();
-
-            Mapper.CreateMap<Domain.Issue, EditIssueForm>();
-
-            Mapper.CreateMap<ApplicationUser, AssignmentStatsViewModel>()
-                .ForMember(m => m.Enhancements, opt =>
-                    opt.MapFrom(u => u.Assignments.Count(i => i.IssueType == IssueType.Enhancement)))
-                .ForMember(m => m.Bugs, opt =>
-                    opt.MapFrom(u => u.Assignments.Count(i => i.IssueType == IssueType.Bug)))
-                .ForMember(m => m.Support, opt =>
-                    opt.MapFrom(u => u.Assignments.Count(i => i.IssueType == IssueType.Support)))
-                .ForMember(m => m.Other, opt =>
-                    opt.MapFrom(u => u.Assignments.Count(i => i.IssueType == IssueType.Other)));
-
+            var types = Assembly.GetExecutingAssembly().GetExportedTypes();
+            LoadStandardMappings(types);
+            LoadCustomMappings(types);
         }
-    }
+
+        private static void LoadCustomMappings(IEnumerable<Type> types)
+        {
+            var maps = (from t in types
+                from i in t.GetInterfaces()
+                where typeof(IHaveCustomMappings).IsAssignableFrom(t) &&
+                      !t.IsAbstract &&
+                      !t.IsInterface
+                select (IHaveCustomMappings)Activator.CreateInstance(t)).ToArray();
+
+            foreach (var map in maps)
+            {
+                map.CreateMappings(Mapper.Configuration);
+            }
+        }
+
+        private static void LoadStandardMappings(IEnumerable<Type> types)
+        {
+            var maps = (from t in types
+                from i in t.GetInterfaces()
+                where i.IsGenericType &&
+                      i.GetGenericTypeDefinition() == typeof(IMapFrom<>) &&
+                      !t.IsAbstract &&
+                      !t.IsInterface
+                select new
+                {
+                    Source = i.GetGenericArguments()[0],
+                    Destination = t
+                }).ToArray();
+
+            foreach (var map in maps)
+            {
+                Mapper.CreateMap(map.Source, map.Destination);
+            }
+        }
+	}
 }

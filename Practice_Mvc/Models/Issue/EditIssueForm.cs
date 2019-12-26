@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using Practice_Mvc.Domain;
+using Practice_Mvc.Infrastructure.Mapping;
 
 namespace Practice_Mvc.Models.Issue
 {
-    public class EditIssueForm
+    public class EditIssueForm: IMapFrom<Domain.Issue>
     {
         public int IssueID { get; set; }
         public string Subject { get; set; }

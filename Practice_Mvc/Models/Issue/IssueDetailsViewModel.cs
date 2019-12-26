@@ -1,9 +1,10 @@
 ﻿using System;
 using Practice_Mvc.Domain;
+using Practice_Mvc.Infrastructure.Mapping;
 
 namespace Practice_Mvc.Models.Issue
 {
-    public class IssueDetailsViewModel
+    public class IssueDetailsViewModel : IMapFrom<Domain.Issue>
     {
 		public int IssueID { get; set; }
         public string Subject { get; set; }

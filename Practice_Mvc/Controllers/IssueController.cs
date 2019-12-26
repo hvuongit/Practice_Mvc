@@ -3,6 +3,7 @@ using Practice_Mvc.Domain;
 using Practice_Mvc.Filters;
 using Practice_Mvc.Models.Issue;
 using System;
+using Microsoft.Web.Mvc;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -90,8 +91,9 @@ namespace Practice_Mvc.Controllers
 
 			_context.SaveChanges();
 
-			return RedirectToAction("Index", "Home");
-		}
+			//return RedirectToAction("Index", "Home");
+            return this.RedirectToAction<HomeController>(c => c.Index());
+        }
 
 		[Log("Viewed issue {id}")]
 		public ActionResult View(int id)
@@ -151,8 +153,9 @@ namespace Practice_Mvc.Controllers
 			issue.IssueType = form.IssueType;
 
 
-			return RedirectToAction("View", new { id = form.IssueID });
-		}
+			//return RedirectToAction("View", new { id = form.IssueID });
+            return this.RedirectToAction(c => c.View(form.IssueID));
+        }
 
 		[HttpPost, ValidateAntiForgeryToken, Log("Deleted issue {id}")]
 		public ActionResult Delete(int id)
@@ -168,7 +171,8 @@ namespace Practice_Mvc.Controllers
 
 			_context.SaveChanges();
 
-			return RedirectToAction("Index", "Home");
-		}
+			//return RedirectToAction("Index", "Home");
+            return this.RedirectToAction<HomeController>(c => c.Index());
+        }
 	}
 }

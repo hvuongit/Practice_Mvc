@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.Identity;
-using Practice_Mvc.Data;
+﻿using Practice_Mvc.Data;
 using Practice_Mvc.Domain;
 using Practice_Mvc.Filters;
 using Practice_Mvc.Models.Issue;

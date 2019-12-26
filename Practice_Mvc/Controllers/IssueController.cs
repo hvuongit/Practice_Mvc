@@ -6,6 +6,7 @@ using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using AutoMapper.QueryableExtensions;
 using Practice_Mvc.Infrastructure;
 
 namespace Practice_Mvc.Controllers
@@ -38,49 +39,29 @@ namespace Practice_Mvc.Controllers
 		[ChildActionOnly]
 		public ActionResult YourIssuesWidget()
 		{
-			var models = _context.Issues.Where(i => i.AssignedTo.Id == _currentUser.User.Id)
-                .Select(i => new IssueSummaryViewModel
-                {
-                    IssueID = i.IssueID,
-                    Subject = i.Subject,
-                    Type = i.IssueType,
-                    CreatedAt = i.CreatedAt,
-                    Creator = i.Creator.UserName
-                }).ToArray();
-
-			return PartialView(models);
-		}
-
-		[ChildActionOnly]
-		public ActionResult CreatedByYouWidget()
-		{
-			var models = from i in _context.Issues
-						 where i.Creator.Id == _currentUser.User.Id
-						 select new IssueSummaryViewModel
-						 {
-							 IssueID = i.IssueID,
-							 Subject = i.Subject,
-							 Type = i.IssueType,
-							 CreatedAt = i.CreatedAt,
-							 AssignedTo = i.AssignedTo.UserName
-						 };
+			var models = _context.Issues
+                .Where(i => i.AssignedTo.Id == _currentUser.User.Id)
+                .Project().To<IssueSummaryViewModel>();
 
 			return PartialView(models.ToArray());
 		}
 
 		[ChildActionOnly]
-		public ActionResult AssignmentStatsWidget()
-		{
-			var stats = _context.Users.Select(u => new AssignmentStatsViewModel
-			{
-				UserName = u.UserName,
-				Enhancements = u.Assignments.Count(i => i.IssueType == IssueType.Enhancement),
-				Bugs = u.Assignments.Count(i => i.IssueType == IssueType.Bug),
-				Support = u.Assignments.Count(i => i.IssueType == IssueType.Support),
-				Other = u.Assignments.Count(i => i.IssueType == IssueType.Other),
-			}).ToArray();
+		public ActionResult CreatedByYouWidget()
+        {
+            var models = _context.Issues
+                .Where(i => i.Creator.Id == _currentUser.User.Id)
+                .Project().To<IssueSummaryViewModel>();
+               
+			return PartialView(models.ToArray());
+		}
 
-			return PartialView(stats);
+		[ChildActionOnly]
+		public ActionResult AssignmentStatsWidget()
+        {
+            var stats = _context.Users.Project().To<AssignmentStatsViewModel>();
+
+			return PartialView(stats.ToArray());
 		}
 
 		public ActionResult New()
@@ -115,52 +96,31 @@ namespace Practice_Mvc.Controllers
 		[Log("Viewed issue {id}")]
 		public ActionResult View(int id)
 		{
-			var issue = _context.Issues
-				.Include(i => i.AssignedTo)
-				.Include(i => i.Creator)
+			var model = _context.Issues
+                .Project().To<IssueDetailsViewModel>()
 				.SingleOrDefault(i => i.IssueID == id);
 
-			if (issue == null)
+			if (model == null)
 			{
 				throw new ApplicationException("Issue not found!");
 			}
 
-			return View(new IssueDetailsViewModel
-			{
-				IssueID = issue.IssueID,
-				Subject = issue.Subject,
-				CreatedAt = issue.CreatedAt,
-				AssignedTo = issue.AssignedTo.UserName,
-				Creator = issue.Creator.UserName,
-				IssueType = issue.IssueType,
-				Body = issue.Body
-			});
+			return View(model);
 		}
 
 		[Log("Started to edit issue {id}")]
 		public ActionResult Edit(int id)
 		{
-			var issue = _context.Issues
-				.Include(i => i.AssignedTo)
-				.Include(i => i.Creator)
+			var model = _context.Issues
+                .Project().To<EditIssueForm>()
 				.SingleOrDefault(i => i.IssueID == id);
 
-			if (issue == null)
+			if (model == null)
 			{
 				throw new ApplicationException("Issue not found!");
 			}
 
-			return View(new EditIssueForm
-			{
-				IssueID = issue.IssueID,
-				Subject = issue.Subject,
-				AssignedToUserID = issue.AssignedTo.Id,
-				AvailableUsers = GetAvailableUsers(),
-				Creator = issue.Creator.UserName,
-				IssueType = issue.IssueType,
-				AvailableIssueTypes = GetAvailableIssueTypes(),
-				Body = issue.Body
-			});
+			return View(model);
 		}
 
 		[HttpPost, Log("Saving changes")]

@@ -14,5 +14,10 @@ namespace Practice_Mvc.Data
 
         public DbSet<Issue> Issues { get; set; }
         public DbSet<LogAction> Logs { get; set; }
+
+        public static ApplicationDbContext Create()
+        {
+            return new ApplicationDbContext();
+        }
     }
 }

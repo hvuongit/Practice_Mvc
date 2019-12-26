@@ -5,6 +5,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
+using Practice_Mvc.Data;
 using Practice_Mvc.Models;
 
 namespace Practice_Mvc

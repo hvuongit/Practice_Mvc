@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Web;
+﻿using System.Security.Principal;
 using Microsoft.AspNet.Identity;
+using Practice_Mvc.Data;
 using Practice_Mvc.Models;
 
 namespace Practice_Mvc.Infrastructure

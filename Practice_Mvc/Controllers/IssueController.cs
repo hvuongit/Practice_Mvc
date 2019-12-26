@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Practice_Mvc.Data;
 using Practice_Mvc.Domain;
+using Practice_Mvc.Filters;
 using Practice_Mvc.Models.Issue;
+using System;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace Practice_Mvc.Controllers
 {
@@ -18,16 +17,17 @@ namespace Practice_Mvc.Controllers
         {
             _context = context;
         }
+
         // GET: Issue
         public ActionResult IssueWidget()
         {
             var models = from i in _context.Issues
-                select new IssueSummaryViewModel
-                {
-                    IssueID = i.IssueID,
-                    Subject = i.Subject,
-                    CreatedAt = i.CreatedAt
-                };
+                         select new IssueSummaryViewModel
+                         {
+                             IssueID = i.IssueID,
+                             Subject = i.Subject,
+                             CreatedAt = i.CreatedAt
+                         };
             return PartialView(models.ToArray());
         }
 
@@ -35,19 +35,19 @@ namespace Practice_Mvc.Controllers
         {
             return View();
         }
-        [HttpPost, ValidateAntiForgeryToken]
+
+        [HttpPost, ValidateAntiForgeryToken, Log("Created issue")]
         public ActionResult New(NewIssueForm form)
         {
             var userId = User.Identity.GetUserId();
             var user = _context.Users.Find(userId);
             _context.Issues.Add(new Issue(user, form.Subject, form.Body));
 
-            _context.Logs.Add(new LogAction(user, "New", "Issue", "Created issue"));
-
             _context.SaveChanges();
             return RedirectToAction("Index", "Home");
         }
 
+        [Log("Viewed issue {id}")]
         public ActionResult View(int id)
         {
             var issue = _context.Issues.Find(id);
@@ -55,11 +55,6 @@ namespace Practice_Mvc.Controllers
             {
                 throw new ApplicationException("Issue not found!");
             }
-
-            var userId = User.Identity.GetUserId();
-            var user = _context.Users.Find(userId);
-
-            _context.Logs.Add(new LogAction(user, "View", "Issue", "Viewed issue " + id));
 
             return View(new IssueDetailsViewModel
             {
@@ -70,7 +65,7 @@ namespace Practice_Mvc.Controllers
             });
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Log("Deleted issue {id}")]
         public ActionResult Delete(int id)
         {
             var issue = _context.Issues.Find(id);
@@ -78,11 +73,6 @@ namespace Practice_Mvc.Controllers
             {
                 throw new ApplicationException("Issue not found!");
             }
-
-            var userId = User.Identity.GetUserId();
-            var user = _context.Users.Find(userId);
-
-            _context.Logs.Add(new LogAction(user, "Delete", "Issue", "Deleted issue "+ id));
 
             _context.Issues.Remove(issue);
             _context.SaveChanges();

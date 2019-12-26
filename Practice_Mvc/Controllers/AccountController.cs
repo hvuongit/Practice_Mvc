@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Net.Mime;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
@@ -9,6 +10,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Practice_Mvc.Models;
+using StructureMap;
 
 namespace Practice_Mvc.Controllers
 {
@@ -17,7 +19,7 @@ namespace Practice_Mvc.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-
+        [DefaultConstructor]
         public AccountController()
         {
         }
